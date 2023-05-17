@@ -7,14 +7,15 @@ services:
     volumes:
       - mysql-store:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD  #=== .envの環境変数から持ってくる
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD #=== .envの環境変数から持ってくる
     ports:
       - '3306:3306'
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:  #=== Dockerfileに引数として渡せる
+      args:
+        #=== Dockerfileに引数として渡せる
         WORKDIR: $WORKDIR
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     ports:
@@ -22,7 +23,8 @@ services:
     volumes:
       - ./backend:/$WORKDIR
       - gem-store:/usr/local/bundle
-    environment:  #=== 環境変数の設定
+    environment:
+      #=== 環境変数の設定
       TZ: Asia/Tokyo
       RAILS_ENV: development
       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
@@ -40,14 +42,16 @@ services:
     # frontendディレクトリにあるホストのファイルとコンテナを同期
     volumes:
       - ./frontend:/$WORKDIR:cached
+      - node_modules:/$WORKDIR/node_modules
     ports:
-      - "8080:8080"
+      - "5173:5173"
     # backendコンテナ起動後にfrontendコンテナを起動
     depends_on:
       - backend
     stdin_open: true
     tty: true
-    command: yarn serve
+    command: yarn dev --host
 volumes:
   mysql-store:
   gem-store:
+  node_modules:

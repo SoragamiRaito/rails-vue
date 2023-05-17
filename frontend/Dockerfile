@@ -6,11 +6,12 @@ ENV HOME=/${WORKDIR} \
 
 WORKDIR ${HOME}
 
-RUN apt-get update
+RUN apt-get update \
+    && yarn install
 
-RUN mkdir app
-WORKDIR /app
-RUN yarn init -y && yarn install
+COPY . ./
+COPY package.json /app/package.json
+COPY yarn.lock /app/yarn.lock
 
-WORKDIR ${HOME}
-RUN yarn create vite front-vue --template vue
+EXPOSE 5173
+CMD ["yarn", "dev", "--host"]
