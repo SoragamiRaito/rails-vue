@@ -5,10 +5,6 @@ ARG WORKDIR
 #=== インストールするパッケージ
 ARG RUNTIME_PACKAGES="build-essential tzdata git less"
 
-ARG username=vscode
-ARG useruid=1000
-ARG usergid=${useruid}
-
 ENV HOME=/${WORKDIR} \
     LANG=ja_JP.UTF-8
 

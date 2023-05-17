@@ -22,7 +22,6 @@ services:
     volumes:
       - ./backend:/$WORKDIR
       - gem-store:/usr/local/bundle
-    user: vscode
     environment:  #=== 環境変数の設定
       TZ: Asia/Tokyo
       RAILS_ENV: development
@@ -41,7 +40,6 @@ services:
     # frontendディレクトリにあるホストのファイルとコンテナを同期
     volumes:
       - ./frontend:/$WORKDIR:cached
-    user: vscode
     ports:
       - "8080:8080"
     # backendコンテナ起動後にfrontendコンテナを起動
