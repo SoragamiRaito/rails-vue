@@ -1,0 +1,40 @@
+#=== 軽量slim系イメージを使用。
+FROM ruby:3.2.2-bullseye
+#=== docker-compose.ymlから渡されたもの
+ARG WORKDIR
+#=== インストールするパッケージ
+ARG RUNTIME_PACKAGES="build-essential tzdata git less"
+
+ARG username=vscode
+ARG useruid=1000
+ARG usergid=${useruid}
+
+ENV HOME=/${WORKDIR} \
+    LANG=ja_JP.UTF-8
+
+WORKDIR ${HOME}
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ${RUNTIME_PACKAGES} \
+    && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+COPY Gemfile /app/Gemfile
+COPY Gemfile.lock /app/Gemfile.lock
+
+ENV LANG=ja_JP.UTF-8 \
+    TZ=Asia/Tokyo
+
+#=== Bundlerを最新のものに
+RUN gem update --system \
+    && gem install bundler
+RUN bundle install
+
+COPY . ./
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+
+EXPOSE 3000
+CMD ["rails", "server", "-b", "0.0.0.0"]

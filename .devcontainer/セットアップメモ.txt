@@ -1,0 +1,39 @@
+1:コマンド実行
+docker-compose build
+
+2:コマンド実行
+docker-compose run --rm backend rails new . -f -B -d mysql --api --skip-test --skip-turbolinks
+
+3:コード編集@backend/config/database.yml
+
+default: &default
+  adapter: mysql2
+  encoding: utf8mb4
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: root
+  password: <%= ENV['MYSQL_ROOT_PASSWORD'] %>
+  host: db
+
+4:コマンド実行
+docker-compose build
+docker-compose run --rm backend bundle install
+docker-compose run --rm backend rails db:create
+docker-compose run --rm frontend bash
+
+5:コマンド実行、vueプロジェクト作成
+vue create .
+いい感じにnpmを使ってインストール、完了後 Ctrl+D でコンテナ停止。ちなみに結構時間かかる。
+
+6:@frontend/Dockerfile編集
+コメントアウトされている追加部分をコメントアウト解除
+
+7:立ち上げ
+docker-compose up
+
+8:接続テスト
+↓railsのページ
+localhost:3000
+↓vueのページ
+localhost:8080
+
+無事表示されたら成功。ちなみにvueのコンテナ立ち上げは時間かかる。
